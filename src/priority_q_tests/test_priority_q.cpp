@@ -87,7 +87,7 @@ void run_tests_priority_q() {
 
     // Test empty queue exceptions
     try {
-        auto test = pq3.top();
+        pq3.top();
         assert(false);
     } catch (const std::out_of_range& e) {
         assert(std::string(e.what()) == "Priority queue is empty");
@@ -111,7 +111,7 @@ void run_tests_priority_q() {
     PriorityQueue<int> pq4(10);
 
     for (int i = 1; i <= 10; i++) {
-        pq4.push(i, i);
+        pq4.push(std::move(i), i);
     }
 
     assert(pq4.get_capacity() == 10);
