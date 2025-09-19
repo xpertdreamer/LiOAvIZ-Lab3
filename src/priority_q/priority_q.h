@@ -69,13 +69,18 @@ class PriorityQueue {
 
     // ==Basic operations==
     [[nodiscard]] bool is_empty() const { return size == 0; }
+
     [[nodiscard]] bool is_full() const { return size == capacity; }
+
     [[nodiscard]] size_t get_size() const { return size; }
+
     [[nodiscard]] size_t get_capacity() const { return capacity; }
+
     [[nodiscard]] const E& top() const {
         if (is_empty()) throw std::out_of_range("Priority queue is empty");
         return heap[0]->data;
     }
+
     [[nodiscard]] int top_priority() const {
         if (is_empty()) throw std::out_of_range("Priority queue is empty");
         return heap[0]->priority;
