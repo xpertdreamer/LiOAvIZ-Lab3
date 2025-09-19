@@ -1,30 +1,26 @@
 #include <iostream>
+#include <string>
 
-#include "priority_q/priority_q.h"
+#include "tests/test_priority_q.h"
 
 int main() {
-    PriorityQueue<int> q(10);
-    std::cout << "capacity: " << q.get_capacity() << std::endl;
+    /*
+     * There`s two test modes:
+     * 1. demo - automaticly push and pop alements
+     * 2. test - do every sort of tests
+     */
 
-    q.push(2, 2);
-    q.push(3, 3);
-    q.push(1, 1);
-    q.push(4, 4);
-    q.push(5, 5);
-    q.push(2, 2);
-    q.push(9, 9);
-    q.push(3, 3);
-    q.push(7, 7);
-    q.push(6, 6);
-    std::cout << "size: " << q.get_size() << std::endl;
-    std::cout << "top: " << q.top() << std::endl;
-    std::cout << "top prior: " << q.top_priority() << std::endl;
-
-    while (!q.is_empty()) {
-        std::cout << q.pop() << " ";
+    const std::string mode = "test";
+    try {
+        if (mode == "test_priority_q") {
+            run_tests_priority_q();
+        } else {
+            run_demo_priority_q();
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
     }
-
-    std::cout << "\nsize: " << q.get_size() << std::endl;
 
     return 0;
 }

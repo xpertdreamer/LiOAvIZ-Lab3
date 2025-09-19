@@ -1,5 +1,6 @@
 #ifndef PRIORITY_Q_H
 #define PRIORITY_Q_H
+#include <stdexcept>
 
 template<typename E>
 class Node {

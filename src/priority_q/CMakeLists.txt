@@ -9,4 +9,3 @@ set_target_properties(PriorityQueue PROPERTIES
 target_include_directories(PriorityQueue PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
-

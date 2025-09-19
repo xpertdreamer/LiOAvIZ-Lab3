@@ -9,10 +9,15 @@ if(POLICY CMP0077)
     cmake_policy(SET CMP0077 NEW)
 endif()
 
-add_subdirectory(src/priority_q)
+add_subdirectory(
+        src/priority_q
+        src/tests
+)
 
 add_executable(LiOAvIZ_Lab3
-        src/main.cpp)
+        src/main.cpp
+        src/tests/test_priority_q.h
+        src/tests/test_priority_q.cpp)
 
 target_link_libraries(LiOAvIZ_Lab3 PRIVATE
         PriorityQueue
