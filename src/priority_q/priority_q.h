@@ -1,6 +1,5 @@
 #ifndef PRIORITY_Q_H
 #define PRIORITY_Q_H
-#include <memory>
 
 template<typename E>
 class Node {
@@ -20,16 +19,44 @@ class PriorityQueue {
     private:
     const size_t capacity;
     size_t size;
-    std::unique_ptr<std::unique_ptr<Node<E>>[]> heap;
+    Node<E>** heap;
+
+    // == Utils methods ==
+    void up(size_t index) {
+        while (index > 0) {
+            if (heap[index]->priority > heap[index - 1]->priority) {
+                std::swap(heap[index], heap[index - 1]);
+                --index;
+            } else break;
+        }
+    }
+
+    void down(size_t index) {
+        while (index < size) {
+            if (heap[index]->priority < heap[index + 1]->priority) {
+                std::swap(heap[index], heap[index + 1]);
+                index = index + 1;
+            } else break;
+        }
+    }
 
     public:
     // ==Constructor==
     explicit PriorityQueue(const size_t cap)
         : capacity(cap),
         size(0),
-        heap(std::make_unique<std::unique_ptr<Node<E>>[]>(cap)) {}
+        heap(new Node<E> *[cap]) {
+            for (size_t i = 0; i < cap; i++) {
+                heap[i] = nullptr;
+            }
+    }
     // ==Destructor==
-    ~PriorityQueue() = default;
+    ~PriorityQueue() {
+        for (size_t i = 0; i < size; i++) {
+            delete heap[i];
+        }
+        delete[] heap;
+    }
 
     // ==Prohibit assignment==
     PriorityQueue& operator=(const PriorityQueue&) = delete;
@@ -48,12 +75,35 @@ class PriorityQueue {
         if (is_empty()) throw std::out_of_range("Priority queue is empty");
         return heap[0]->data;
     }
+    [[nodiscard]] int top_priority() const {
+        if (is_empty()) throw std::out_of_range("Priority queue is empty");
+        return heap[0]->priority;
+    }
 
-    // note: add heapify
     void push(const E& value, int priority) {
         if (is_full()) throw std::out_of_range("Priority queue is full");
-        heap[size] = std::make_unique<Node<E>>(value, priority);
-        size++;
+
+        heap[size] = new Node<E>(value, priority);
+        up(size);
+        ++size;
+    }
+
+    E pop() {
+        if (is_empty()) throw std::out_of_range("Priority queue is empty");
+
+        E res = std::move(heap[0]->data);
+        delete heap[0];
+
+        if (size > 1) {
+            heap[0] = std::move(heap[size - 1]);
+            --size;
+            down(0);
+        } else {
+            heap[0] = nullptr;
+            size = 0;
+        }
+
+        return res;
     }
 };
 
