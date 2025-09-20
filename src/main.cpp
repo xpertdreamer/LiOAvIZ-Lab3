@@ -10,44 +10,27 @@ int main() {
      * 1. demo - automatically push and pop elements
      * 2. test - do every sort of tests
      */
+    std::string mode;
+    std::cout << "Select mode:" << std::endl;
+    std::cout << "1. demo - automatic push and pop elements" << std::endl;
+    std::cout << "2. test - run all tests" << std::endl;
+    std::cout << "Enter 'demo' or 'test': ";
 
-    Queue<int> q(5);
-    std::cout << "empty? " << q.is_empty() << std::endl;
-    std::cout << "size: " << q.get_size() << std::endl;
-    std::cout << "capacity: " << q.get_capacity() << std::endl;
-    for (int i = 0; i < q.get_capacity(); i++) {
-        q.push(i);
-        std::cout << "front: " << q.peek_front() << std::endl;
-    }
-    std::cout << "empty? " << q.is_empty() << std::endl;
-    std::cout << "size: " << q.get_size() << std::endl;
-    std::cout << "capacity: " << q.get_capacity() << std::endl;
-    std::cout << "full? " << q.is_full() << std::endl;
-    while (q.get_size() > 0) {
-        std::cout << q.pop() << " | ";
-    }
+    std::cin >> mode;
 
-    // std::string mode;
-    // std::cout << "Select mode:" << std::endl;
-    // std::cout << "1. demo - automatic push and pop elements" << std::endl;
-    // std::cout << "2. test - run all tests" << std::endl;
-    // std::cout << "Enter 'demo' or 'test': ";
-    //
-    // std::cin >> mode;
-    //
-    // try {
-    //     if (mode == "test") {
-    //         run_tests_priority_q();
-    //     } else if (mode == "demo") {
-    //         run_demo_priority_q();
-    //     } else {
-    //         std::cout << "Invalid mode! Using demo mode by default." << std::endl;
-    //         run_demo_priority_q();
-    //     }
-    // } catch (const std::exception& e) {
-    //     std::cerr << "Error: " << e.what() << std::endl;
-    //     return 1;
-    // }
+    try {
+        if (mode == "test") {
+            run_tests_priority_q();
+        } else if (mode == "demo") {
+            run_demo_priority_q();
+        } else {
+            std::cout << "Invalid mode! Using demo mode by default." << std::endl;
+            run_demo_priority_q();
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
 
     return 0;
 }
