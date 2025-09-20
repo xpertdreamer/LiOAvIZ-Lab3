@@ -29,7 +29,7 @@ int main() {
                 run_demo_queue();
             } else if (mode == "exit") {
                 std::cout << "Exiting..." << std::endl;
-                return 0;
+                break;
             } else {
                 std::cout << "Invalid mode! Using demo mode by default." << std::endl;
                 run_demo_priority_q();
