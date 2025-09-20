@@ -50,7 +50,7 @@ class Queue {
 
     [[maybe_unused]] const E& peek_back() const {
         if (is_empty()) throw std::out_of_range("Queue is empty");
-        return heap[rear];
+        return heap[rear - 1];
     }
 
     [[maybe_unused]] const E& peek_front() const {

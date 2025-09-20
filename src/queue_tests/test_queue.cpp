@@ -13,7 +13,7 @@ void run_demo_queue() {
     Queue<int> q(10);
 
     // Add elements
-    for (int i = 10; i < q.get_capacity(); i += 10) {
+    for (int i = 10; i / 10 < q.get_capacity(); i += 10) {
         q.push(i);
     }
 
