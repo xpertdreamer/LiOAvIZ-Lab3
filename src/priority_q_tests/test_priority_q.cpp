@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include "priority_q/priority_q.h"
+#include "test_priority_q.h"
 
 void run_demo_priority_q() {
     std::cout << "=== Priority Queue Demo ===" << std::endl;

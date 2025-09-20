@@ -12,6 +12,7 @@ endif()
 add_subdirectory(src/priority_q)
 add_subdirectory(src/priority_q_tests)
 add_subdirectory(src/queue)
+add_subdirectory(src/queue_tests)
 
 add_executable(LiOAvIZ_Lab3
         src/main.cpp
@@ -21,6 +22,7 @@ target_link_libraries(LiOAvIZ_Lab3 PRIVATE
         PriorityQueue
         PriorityQueueTests
         Queue
+        QueueTests
 )
 
 target_include_directories(LiOAvIZ_Lab3 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

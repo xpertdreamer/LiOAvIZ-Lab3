@@ -2,7 +2,7 @@
 #include <string>
 
 #include "priority_q_tests/test_priority_q.h"
-#include <queue/queue.h>
+#include "queue_tests/test_queue.h"
 
 int main() {
     /*
@@ -21,8 +21,10 @@ int main() {
     try {
         if (mode == "test") {
             run_tests_priority_q();
+            run_tests_queue();
         } else if (mode == "demo") {
             run_demo_priority_q();
+            run_demo_queue();
         } else {
             std::cout << "Invalid mode! Using demo mode by default." << std::endl;
             run_demo_priority_q();
