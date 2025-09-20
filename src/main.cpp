@@ -23,7 +23,7 @@ int main() {
         try {
             if (mode == "test") {
                 run_tests_priority_q();
-                // run_tests_queue();
+                run_tests_queue();
             } else if (mode == "demo") {
                 run_demo_priority_q();
                 run_demo_queue();
