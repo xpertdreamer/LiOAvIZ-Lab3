@@ -11,6 +11,14 @@ class Queue {
     private:
     const size_t capacity;
     size_t size;
+    /*
+     * Save rear and front elements
+     * of queue array to properly
+     * push and pop
+     */
+    size_t rear;
+    size_t front;
+
     E* heap;
 
     public:
@@ -18,6 +26,8 @@ class Queue {
     explicit Queue(size_t cap)
         : capacity(cap),
         size(0),
+        rear(0),
+        front(0),
         heap(new E[capacity]) {}
     // Destructor
     ~Queue() {
@@ -38,28 +48,36 @@ class Queue {
 
     [[nodiscard]] size_t get_capacity() const { return capacity; }
 
-    [[maybe_unused]] const E& peek_top() const {
+    [[maybe_unused]] const E& peek_back() const {
         if (is_empty()) throw std::out_of_range("Queue is empty");
         return heap[size-1];
     }
 
+    [[maybe_unused]] const E& peek_front() const {
+        if (is_empty()) throw std::out_of_range("Queue is empty");
+        return heap[0];
+    }
+
     void push(E&& e) {
         if (is_full()) throw std::out_of_range("Queue is full");
-        heap[size++] = std::move(e);
+        heap[rear] = std::move(e);
+        rear = (rear + 1) % capacity;
         ++size;
     }
 
-    E pop() {
+    void push(const E& e) {
+        if (is_full()) throw std::out_of_range("Queue is full");
+        heap[rear] = e;
+        rear = (rear + 1) % capacity;
+        ++size;
+    }
+
+    [[maybe_unused]] E pop() {
         if (is_empty()) throw std::out_of_range("Queue is empty");
 
-        E res = std::move(heap[--size]);
-
-        if (size > 1) {
-            for (size_t i = size; i > 1; --i) {
-                heap[i] = std::move(heap[i/2]);
-            }
-            --size;
-        } else size = 0;
+        E res = std::move(heap[front]);
+        front = (front + 1) % capacity;
+        --size;
 
         return res;
     }
