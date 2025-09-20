@@ -50,12 +50,12 @@ class Queue {
 
     [[maybe_unused]] const E& peek_back() const {
         if (is_empty()) throw std::out_of_range("Queue is empty");
-        return heap[size-1];
+        return heap[rear];
     }
 
     [[maybe_unused]] const E& peek_front() const {
         if (is_empty()) throw std::out_of_range("Queue is empty");
-        return heap[0];
+        return heap[front];
     }
 
     void push(E&& e) {
