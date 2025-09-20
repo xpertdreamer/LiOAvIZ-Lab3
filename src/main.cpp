@@ -10,33 +10,35 @@ int main() {
      * 1. demo - automatically push and pop elements
      * 2. test - do every sort of tests
      */
-    std::string mode;
-    std::cout << "Select mode:" << std::endl;
-    std::cout << "1. demo - automatic push and pop elements" << std::endl;
-    std::cout << "2. test - run all tests" << std::endl;
-    std::cout << "3. exit - stop the program" << std::endl;
-    std::cout << "Enter 'demo' or 'test': ";
+    while (true) {
+        std::string mode;
+        std::cout << "\nSelect mode:" << std::endl;
+        std::cout << "1. demo - automatic push and pop elements" << std::endl;
+        std::cout << "2. test - run all tests" << std::endl;
+        std::cout << "3. exit - stop the program" << std::endl;
+        std::cout << "Enter 'demo', 'test' or 'exit': ";
 
-    std::cin >> mode;
+        std::cin >> mode;
 
-    try {
-        if (mode == "test") {
-            run_tests_priority_q();
-            // run_tests_queue();
-        } else if (mode == "demo") {
-            run_demo_priority_q();
-            run_demo_queue();
-        } else if (mode == "exit") {
-            std::cout << "Exiting..." << std::endl;
-            return 0;
-        } else {
-            std::cout << "Invalid mode! Using demo mode by default." << std::endl;
-            run_demo_priority_q();
-            run_demo_queue();
+        try {
+            if (mode == "test") {
+                run_tests_priority_q();
+                // run_tests_queue();
+            } else if (mode == "demo") {
+                run_demo_priority_q();
+                run_demo_queue();
+            } else if (mode == "exit") {
+                std::cout << "Exiting..." << std::endl;
+                return 0;
+            } else {
+                std::cout << "Invalid mode! Using demo mode by default." << std::endl;
+                run_demo_priority_q();
+                run_demo_queue();
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            return 1;
         }
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
     }
 
     return 0;
