@@ -40,16 +40,18 @@ class Stack {
     void push(const E& e) {
         if (is_full()) throw std::out_of_range("Stack is full");
         heap[++top] = e;
+        ++size;
     }
     // Move object or move temporary
     void push(E&& e) {
         if (is_full()) throw std::out_of_range("Stack is full");
         heap[++top] = std::move(e);
+        ++size;
     }
 
     [[maybe_unused]] E pop() {
         if (is_empty()) throw std::out_of_range("Stack is empty");
-
+        --size;
         return heap[top--];
     }
 
