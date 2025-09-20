@@ -23,7 +23,7 @@ class Queue {
 
     public:
     // Constructor
-    explicit Queue(size_t cap)
+    explicit Queue(const size_t cap)
         : capacity(cap),
         size(0),
         rear(0),
