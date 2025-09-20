@@ -14,6 +14,7 @@ int main() {
     std::cout << "Select mode:" << std::endl;
     std::cout << "1. demo - automatic push and pop elements" << std::endl;
     std::cout << "2. test - run all tests" << std::endl;
+    std::cout << "3. exit - stop the program" << std::endl;
     std::cout << "Enter 'demo' or 'test': ";
 
     std::cin >> mode;
@@ -25,9 +26,13 @@ int main() {
         } else if (mode == "demo") {
             run_demo_priority_q();
             run_demo_queue();
+        } else if (mode == "exit") {
+            std::cout << "Exiting..." << std::endl;
+            return 0;
         } else {
             std::cout << "Invalid mode! Using demo mode by default." << std::endl;
             run_demo_priority_q();
+            run_demo_queue();
         }
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
