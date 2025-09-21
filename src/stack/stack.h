@@ -14,9 +14,9 @@ class Stack {
     size_t top;     // Top of the stack
     E* heap;
 
-    void resize(size_t newCapacity) {
+    void resize(const size_t newCapacity) {
         E* newHeap = new E[newCapacity];
-        for (size_t i = 0; i < top; i++) {
+        for (size_t i = 0; i <= top; i++) {
             newHeap[i] = std::move(heap[i]);
         }
         delete[] heap;
@@ -61,11 +61,12 @@ class Stack {
 
     [[maybe_unused]] E pop() {
         if (is_empty()) throw std::out_of_range("Stack is empty");
-
-        if (size < capacity / 4 && capacity > 10) resize(capacity / 2);
-
+        E result = std::move(heap[top--]);
         --size;
-        return std::move(heap[top--]);
+
+        if (size < capacity / 4 && capacity > 10) resize(std::max(static_cast<size_t>(10), capacity / 2));
+
+        return result;
     }
 
     [[maybe_unused]] E peek() const {
