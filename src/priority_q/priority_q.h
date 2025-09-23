@@ -18,7 +18,7 @@ class Node {
 template<typename E>
 class PriorityQueue {
     private:
-    const size_t capacity;
+    size_t capacity;
     size_t size;
     Node<E>* heap;
 
@@ -60,6 +60,18 @@ class PriorityQueue {
         }
     }
 
+    void resize(const size_t newCap) {
+        auto* newHeap = new Node<E>[newCap];
+        for (size_t i = 0; i < size; i++) {
+            newHeap[i].data = std::move(heap[i].data);
+            newHeap[i].priority = std::move(heap[i].priority);
+        }
+        delete[] heap;
+        heap = newHeap;
+        capacity = newCap;
+
+    }
+
     public:
     // ==Constructor==
     explicit PriorityQueue(const size_t cap)
@@ -99,7 +111,7 @@ class PriorityQueue {
     }
 
     void push(E&& value, int priority) {
-        if (is_full()) throw std::out_of_range("Priority queue is full");
+        if (is_full()) resize(2 * capacity);
         heap[size] = Node<E>(std::move(value), priority);
         up(size);
         ++size;
@@ -117,6 +129,8 @@ class PriorityQueue {
         } else {
             size = 0;
         }
+
+        if (size < capacity / 4 && capacity > 10) resize(std::max(static_cast<size_t>(10), capacity / 2));
 
         return res;
     }
