@@ -9,7 +9,7 @@
 template<typename E>
 class Queue {
     private:
-    const size_t capacity;
+    size_t capacity;
     size_t size;
     /*
      * Save rear and front elements
@@ -20,6 +20,16 @@ class Queue {
     size_t front;
 
     E* heap;
+
+    void resize(const size_t newCapacity) {
+        auto* newHeap = new E[newCapacity];
+        for (size_t i = 0; i < rear; i++) {
+            newHeap[i] = std::move(heap[i]);
+        }
+        delete[] heap;
+        heap = newHeap;
+        capacity = newCapacity;
+    }
 
     public:
     // Constructor
@@ -59,14 +69,14 @@ class Queue {
     }
 
     void push(E&& e) {
-        if (is_full()) throw std::out_of_range("Queue is full");
+        if (is_full()) resize(2 * capacity);
         heap[rear] = std::move(e);
         rear = (rear + 1) % capacity;
         ++size;
     }
 
     void push(const E& e) {
-        if (is_full()) throw std::out_of_range("Queue is full");
+        if (is_full()) resize(2 * capacity);
         heap[rear] = e;
         rear = (rear + 1) % capacity;
         ++size;
@@ -78,6 +88,8 @@ class Queue {
         E res = std::move(heap[front]);
         front = (front + 1) % capacity;
         --size;
+
+        if (size < capacity / 4 && capacity > 10) resize(std::max(static_cast<size_t>(10), capacity / 2));
 
         return res;
     }
