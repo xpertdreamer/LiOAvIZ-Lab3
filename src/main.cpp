@@ -4,40 +4,42 @@
 #include "priority_q_tests/test_priority_q.h"
 #include "queue_tests/test_queue.h"
 #include "stack_tests/test_stack.h"
+#include "utils/utils.h"
 
 int main() {
     /*
-     * There`s two test modes:
+     * There`s three modes:
      * 1. demo - automatically push and pop elements
      * 2. test - do every sort of tests
+     * 3. free - write your own code and have fun
      */
     while (true) {
-        std::string mode;
-        std::cout << "\nSelect mode:" << std::endl;
-        std::cout << "1. demo - automatic push and pop elements" << std::endl;
-        std::cout << "2. test - run all tests" << std::endl;
-        std::cout << "3. exit - stop the program" << std::endl;
-        std::cout << "Enter 'demo', 'test' or 'exit': ";
-
-        std::cin >> mode;
+        std::string mode = Utils::get_valid_mode();
 
         try {
             if (mode == "test") {
+                std::cout << "=== Running Tests ===" << std::endl;
                 run_tests_priority_q();
                 run_tests_queue();
                 run_tests_stack();
-            } else if (mode == "demo") {
+                std::cout << "\n=== All Tests Completed ===" << std::endl;
+            }
+            if (mode == "demo") {
+                std::cout << "\n=== Running Demos ===" << std::endl;
                 run_demo_priority_q();
                 run_demo_queue();
                 run_demo_stack();
-            } else if (mode == "exit") {
-                std::cout << "Exiting..." << std::endl;
-                break;
-            } else {
-                std::cout << "Invalid mode! Using demo mode by default." << std::endl;
-                run_demo_priority_q();
-                run_demo_queue();
-                run_demo_stack();
+            }
+            if (mode == "free") {
+                std::cout << "\n=== Running Free Mode ===" << std::endl;
+                Utils::run_free_mode(); // <- write your code here
+                std::cout << "\n=== Free mode is completed ===" << std::endl;
+            }
+            if (mode == "exit") {
+                if (Utils::get_confirm("Are you sure?")) {
+                    std::cout << "Exiting program. Goodbye!" << std::endl;
+                    break;
+                }
             }
         } catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
@@ -46,4 +48,9 @@ int main() {
     }
 
     return 0;
+}
+
+void Utils::run_free_mode() {
+    /* */
+    std::cout << "Empty!" << std::endl;
 }
