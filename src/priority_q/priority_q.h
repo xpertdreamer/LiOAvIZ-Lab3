@@ -63,8 +63,7 @@ class PriorityQueue {
     void resize(const size_t newCap) {
         auto* newHeap = new Node<E>[newCap];
         for (size_t i = 0; i < size; i++) {
-            newHeap[i].data = std::move(heap[i].data);
-            newHeap[i].priority = std::move(heap[i].priority);
+            newHeap[i] = std::move(heap[i]);
         }
         delete[] heap;
         heap = newHeap;
@@ -113,6 +112,13 @@ class PriorityQueue {
     void push(E&& value, int priority) {
         if (is_full()) resize(2 * capacity);
         heap[size] = Node<E>(std::move(value), priority);
+        up(size);
+        ++size;
+    }
+
+    void push(const E& value, int priority) {
+        if (is_full()) resize(2 * capacity);
+        heap[size] = Node<E>(value, priority);
         up(size);
         ++size;
     }
