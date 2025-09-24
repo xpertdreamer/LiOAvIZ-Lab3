@@ -23,12 +23,25 @@ class Queue {
 
     void resize(const size_t newCapacity) {
         auto* newHeap = new E[newCapacity];
-        for (size_t i = 0; i < rear; i++) {
-            newHeap[i] = std::move(heap[i]);
+
+        if (front < rear) {
+            for (size_t i = 0; i < size; i++) {
+                newHeap[i] = std::move(heap[(front + i)]);
+            }
+        } else {
+            const size_t firstPart = capacity - front;
+            for (size_t i = 0; i < firstPart; i++) {
+                newHeap[i] = std::move(heap[(front + i)]);
+            }
+            for (size_t i = 0; i < rear; i++) {
+                newHeap[firstPart + i] = std::move(heap[i]);
+            }
         }
         delete[] heap;
         heap = newHeap;
         capacity = newCapacity;
+        front = 0;
+        rear = size;
     }
 
     public:
@@ -60,7 +73,7 @@ class Queue {
 
     [[maybe_unused]] const E& peek_back() const {
         if (is_empty()) throw std::out_of_range("Queue is empty");
-        return heap[rear - 1];
+        return heap[(rear == 0) ? capacity - 1 : rear - 1];
     }
 
     [[maybe_unused]] const E& peek_front() const {
