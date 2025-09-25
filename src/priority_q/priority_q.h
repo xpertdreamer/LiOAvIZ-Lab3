@@ -7,10 +7,12 @@ class Node {
     public:
     E data;
     int priority{};
+    Node* next;
 
     // ==Constructor==
     Node() = default;
-    Node(const E& d, const int p) : data(d), priority(p) {}
+    Node(const E& d, const int p) : data(d), priority(p), next(nullptr) {}
+    Node(E&& d, const int p) : data(static_cast<E&&>(d)), priority(p), next(nullptr) {}
     // ==Destructor==
     ~Node() = default;
 };
@@ -18,74 +20,43 @@ class Node {
 template<typename E>
 class PriorityQueue {
     private:
-    size_t capacity;
     size_t size;
-    Node<E>* heap;
+    Node<E>* head;
 
     // == Utils methods ==
-    /*
-     * We use binary heap there
-     * to optimize push algorithm
-     */
-    void up(size_t index) {
-        while (index > 0) {
-            size_t parent = (index - 1) >> 2;
-            if (heap[index].priority > heap[parent].priority) {
-                std::swap(heap[index], heap[parent]);
-                index = parent;
-            } else {
-                break;
-            }
+    void insert_sorted(Node<E>* newNode) {
+        if (!head || newNode->priority > head->priority) {
+            newNode->next = head;
+            head = newNode;
+        } else {
+            auto curr = head;
+            while (curr->next && curr->next->priority >= newNode->priority)
+                curr = curr->next;
+            newNode->next = curr->next;
+            curr->next = newNode;
         }
     }
 
-    void down(size_t index) {
-        while (true) {
-            size_t left = 2 * index + 1;
-            size_t right = 2 * index + 2;
-            size_t largest = index;
-
-            if (left < size && heap[left].priority > heap[largest].priority) {
-                largest = left;
-            }
-            if (right < size && heap[right].priority > heap[largest].priority) {
-                largest = right;
-            }
-            if (largest != index) {
-                std::swap(heap[index], heap[largest]);
-                index = largest;
-            } else {
-                break;
-            }
+    void clear() {
+        while (head) {
+            auto temp = head;
+            head = head->next;
+            delete temp;
         }
-    }
-
-    void resize(const size_t newCap) {
-        auto* newHeap = new Node<E>[newCap];
-        for (size_t i = 0; i < size; i++) {
-            newHeap[i] = std::move(heap[i]);
-        }
-        delete[] heap;
-        heap = newHeap;
-        capacity = newCap;
-
+        size = 0;
     }
 
     public:
     // ==Constructor==
-    explicit PriorityQueue(const size_t cap)
-        : capacity(cap),
-        size(0),
-        heap(new Node<E>[cap]) {}
+    explicit PriorityQueue() : size(0), head(nullptr) {}
     // ==Destructor==
     ~PriorityQueue() {
-        delete[] heap;
+        clear();
     }
 
     // ==Prohibit assignment==
     PriorityQueue& operator=(const PriorityQueue&) = delete;
     PriorityQueue(const PriorityQueue&) = delete;
-
     // ==Prohibit movement==
     PriorityQueue(PriorityQueue&&) = delete;
     PriorityQueue& operator=(PriorityQueue&&) = delete;
@@ -93,52 +64,64 @@ class PriorityQueue {
     // ==Basic operations==
     [[nodiscard]] bool is_empty() const { return size == 0; }
 
-    [[nodiscard]] bool is_full() const { return size == capacity; }
-
     [[nodiscard]] size_t get_size() const { return size; }
 
-    [[nodiscard]] size_t get_capacity() const { return capacity; }
 
     [[maybe_unused]] const E& top() const {
         if (is_empty()) throw std::out_of_range("Priority queue is empty");
-        return heap[0].data;
+        return head->data;
     }
 
     [[nodiscard]] int top_priority() const {
         if (is_empty()) throw std::out_of_range("Priority queue is empty");
-        return heap[0].priority;
+        return head->priority;
     }
 
     void push(E&& value, int priority) {
-        if (is_full()) resize(2 * capacity);
-        heap[size] = Node<E>(std::move(value), priority);
-        up(size);
+        auto newNode = new Node<E>(static_cast<E&&>(value), priority);
+        insert_sorted(newNode);
         ++size;
     }
 
     void push(const E& value, int priority) {
-        if (is_full()) resize(2 * capacity);
-        heap[size] = Node<E>(value, priority);
-        up(size);
+        auto newNode = new Node<E>(value, priority);
+        insert_sorted(newNode);
         ++size;
     }
 
     E pop() {
         if (is_empty()) throw std::out_of_range("Priority queue is empty");
 
-        E res = std::move(heap[0].data);
+        auto temp = head;
+        E res = static_cast<E&&>(temp->data);
 
-        if (size > 1) {
-            heap[0] = std::move(heap[size - 1]);
-            --size;
-            down(0);
-        } else {
-            size = 0;
-        }
-
-        if (size < capacity / 4 && capacity > 10) resize(std::max(static_cast<size_t>(10), capacity / 2));
+        head = head->next;
+        delete temp;
+        --size;
 
         return res;
+    }
+
+    E* find_by_priority(const int& prior) const {
+        auto curr = head;
+        while (curr) {
+            if (curr->priority == prior) return &curr->data;
+            curr = curr->next;
+        }
+        return nullptr;
+    }
+
+    [[nodiscard]] bool contains_by_priority(const int prior) const {
+        return find_by_priority(prior) != nullptr;
+    }
+
+    int find_by_value(const E& value) const {
+        auto curr = head;
+        while (curr) {
+            if (curr->data == value) return curr->priority;
+            curr = curr->next;
+        }
+        return -1;
     }
 };
 
