@@ -102,17 +102,22 @@ class PriorityQueue {
         return res;
     }
 
-    E* find_by_priority(const int& prior) const {
+    E find_by_priority(const int& prior) const {
         auto curr = head;
         while (curr) {
-            if (curr->priority == prior) return &curr->data;
+            if (curr->priority == prior) return curr->data;
             curr = curr->next;
         }
-        return nullptr;
+        throw std::out_of_range("Element with specified priority not found");
     }
 
     [[nodiscard]] bool contains_by_priority(const int prior) const {
-        return find_by_priority(prior) != nullptr;
+        auto curr = head;
+        while (curr) {
+            if (curr->priority == prior) return true;
+            curr = curr->next;
+        }
+        return false;
     }
 
     int find_by_value(const E& value) const {
