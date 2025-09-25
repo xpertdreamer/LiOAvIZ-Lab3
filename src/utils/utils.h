@@ -13,6 +13,7 @@ namespace Utils {
     std::string get_valid_mode();
     bool get_confirm(const std::string& msg);
     void run_free_mode();
+    void run_playground_mode();
 }
 
 #endif //UTILS_H

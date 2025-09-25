@@ -9,10 +9,11 @@
 
 int main() {
     /*
-     * There`s three modes:
+     * There`s four modes:
      * 1. demo - automatically push and pop elements
      * 2. test - do every sort of tests
      * 3. free - write your own code and have fun
+     * 4. playground - interactive mode
      */
     while (true) {
         std::string mode = Utils::get_valid_mode();
@@ -35,6 +36,9 @@ int main() {
                 std::cout << "\n=== Running Free Mode ===" << std::endl;
                 Utils::run_free_mode(); // <- write your code here
                 std::cout << "\n=== Free mode is completed ===" << std::endl;
+            }
+            if (mode == "playground") {
+                Utils::run_playground_mode();
             }
             if (mode == "exit") {
                 if (Utils::get_confirm("Are you sure?")) {

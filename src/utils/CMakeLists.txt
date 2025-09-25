@@ -1,6 +1,7 @@
 add_library(Utils STATIC
         utils.cpp
         utils.h
+        playground.h
 )
 
 set_target_properties(Utils PROPERTIES
