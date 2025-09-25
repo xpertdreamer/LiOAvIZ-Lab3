@@ -10,7 +10,7 @@
 void run_demo_priority_q() {
     std::cout << "\n=== Priority Queue Demo ====" << std::endl;
 
-    PriorityQueue<int> pq(10);
+    PriorityQueue<int> pq;
 
     // Add elements with different priorities
     pq.push(5, 2);
@@ -20,8 +20,29 @@ void run_demo_priority_q() {
     pq.push(15, 8);
 
     std::cout << "Queue size: " << pq.get_size() << std::endl;
-    std::cout << "Queue capacity: " << pq.get_capacity() << std::endl;
     std::cout << "Top element: " << pq.top() << " (priority: " << pq.top_priority() << ")" << std::endl;
+
+    // Test find methods
+    std::cout << "\n=== Testing Find Methods ===" << std::endl;
+
+    // Find by priority
+    try {
+        const int result = pq.find_by_priority(5);
+        std::cout << "Element with priority 5: " << result << std::endl;
+    } catch (const std::out_of_range& e) {
+        std::cout << "Element with priority 5 not found" << std::endl;
+    }
+
+    // Check if priority exists
+    if (pq.contains_by_priority(3)) {
+        std::cout << "Priority 3 exists in queue" << std::endl;
+    }
+
+    // Find priority by value
+    int priority = pq.find_by_value(7);
+    if (priority != -1) {
+        std::cout << "Value 7 has priority: " << priority << std::endl;
+    }
 
     std::cout << "\nExtracting all elements (highest priority first):" << std::endl;
     while (!pq.is_empty()) {
@@ -34,11 +55,9 @@ void run_tests_priority_q() {
 
     // Test 1: Constructor and basic properties
     std::cout << "Test 1: Constructor and basic properties... ";
-    PriorityQueue<int> pq(5);
+    PriorityQueue<int> pq;
     assert(pq.is_empty());
-    assert(!pq.is_full());
     assert(pq.get_size() == 0);
-    assert(pq.get_capacity() == 5);
     std::cout << "PASSED" << std::endl;
 
     // Test 2: Push and check top element
@@ -68,7 +87,7 @@ void run_tests_priority_q() {
 
     // Test 4: Priority ordering (max-heap behavior)
     std::cout << "Test 4: Priority ordering... ";
-    PriorityQueue<int> pq2(10);
+    PriorityQueue<int> pq2;
 
     // Insert in random order
     pq2.push(1, 1);
@@ -88,7 +107,7 @@ void run_tests_priority_q() {
 
     // Test 5: Edge cases and exceptions
     std::cout << "Test 5: Edge cases and exceptions... ";
-    PriorityQueue<int> pq3(3);
+    PriorityQueue<int> pq3;
 
     // Test empty queue exceptions
     try {
@@ -104,20 +123,11 @@ void run_tests_priority_q() {
     } catch (const std::out_of_range& e) {
         assert(std::string(e.what()) == "Priority queue is empty");
     }
-
-    // Test with full queue (should resize automatically)
-    pq3.push(1, 1);
-    pq3.push(2, 2);
-    pq3.push(3, 3);
-    pq3.push(4, 4);  // This should trigger resize
-
-    assert(pq3.get_size() == 4);
-    assert(pq3.get_capacity() > 3);
     std::cout << "PASSED" << std::endl;
 
     // Test 6: Move semantics
     std::cout << "Test 6: Move semantics... ";
-    PriorityQueue<std::string> pq4(5);
+    PriorityQueue<std::string> pq4;
 
     std::string str = "Hello";
     pq4.push(str, 1);           // Copy
@@ -131,45 +141,88 @@ void run_tests_priority_q() {
 
     // Test 7: Complex priority scenario
     std::cout << "Test 7: Complex priority scenario... ";
-    PriorityQueue<int> pq5(10);
+    PriorityQueue<int> pq5;
 
-    // Add elements with same priority (should maintain order for same priority)
-    for (int i = 1; i <= 5; i++) {
-        pq5.push(i * 10, i);  // Priorities 1-5
-    }
+    // Add elements with same priority
+    pq5.push(10, 5);
+    pq5.push(20, 3);
+    pq5.push(30, 5);  // Same priority as first
+    pq5.push(40, 1);
+    pq5.push(50, 3);  // Same priority as second
 
-    // Add elements with duplicate priorities
-    pq5.push(100, 5);
-    pq5.push(200, 3);
-
-    // Should pop in priority order (5, 5, 4, 3, 3, 2, 1)
-    // For same priority, order is not guaranteed but both 5s should come first
-    int last_priority = 10;
-    while (!pq5.is_empty()) {
-        int current_priority = pq5.top_priority();
-        assert(current_priority <= last_priority);  // Priority should not increase
-        last_priority = current_priority;
-        pq5.pop();
-    }
+    // Should pop in priority order (5, 5, 3, 3, 1)
+    assert(pq5.pop() == 10);  // priority 5
+    assert(pq5.pop() == 30);  // priority 5
+    assert(pq5.pop() == 20);  // priority 3
+    assert(pq5.pop() == 50);  // priority 3
+    assert(pq5.pop() == 40);  // priority 1
+    assert(pq5.is_empty());
     std::cout << "PASSED" << std::endl;
 
-    // Test 8: Dynamic resizing
-    std::cout << "Test 8: Dynamic resizing... ";
-    PriorityQueue<int> pq6(2);
+    // Test 8: Find by priority
+    std::cout << "Test 8: Find by priority... ";
+    PriorityQueue<int> pq6;
 
-    pq6.push(1, 1);
-    pq6.push(2, 2);
-    assert(pq6.get_capacity() == 2);
+    pq6.push(100, 10);
+    pq6.push(200, 20);
+    pq6.push(300, 30);
+    pq6.push(400, 20);  // Duplicate priority
 
-    pq6.push(3, 3);  // Trigger resize
-    assert(pq6.get_capacity() > 2);
-    assert(pq6.get_size() == 3);
+    // Test find_by_priority
+    assert(pq6.find_by_priority(20) == 200);  // Returns first found
+    assert(pq6.find_by_priority(30) == 300);
 
-    // Verify data integrity after resize
-    assert(pq6.pop() == 3);
-    assert(pq6.pop() == 2);
-    assert(pq6.pop() == 1);
-    assert(pq6.is_empty());
+    // Test exception when not found
+    try {
+        pq6.find_by_priority(50);
+        assert(false); // Should not reach here
+    } catch (const std::out_of_range& e) {
+        assert(std::string(e.what()) == "Element with specified priority not found");
+    }
+
+    // Test contains_by_priority
+    assert(pq6.contains_by_priority(10) == true);
+    assert(pq6.contains_by_priority(20) == true);
+    assert(pq6.contains_by_priority(99) == false);
+    std::cout << "PASSED" << std::endl;
+
+    // Test 9: Find by value
+    std::cout << "Test 9: Find by value... ";
+    PriorityQueue<std::string> pq7;
+
+    pq7.push("apple", 5);
+    pq7.push("banana", 3);
+    pq7.push("orange", 7);
+
+    assert(pq7.find_by_value("banana") == 3);
+    assert(pq7.find_by_value("orange") == 7);
+    assert(pq7.find_by_value("grape") == -1);  // Not found
+
+    // Test with integers
+    PriorityQueue<int> pq8;
+    pq8.push(42, 10);
+    pq8.push(123, 5);
+    assert(pq8.find_by_value(42) == 10);
+    assert(pq8.find_by_value(999) == -1);
+    std::cout << "PASSED" << std::endl;
+
+    // Test 10: Large number of elements (simpler version)
+    std::cout << "Test 10: Large number of elements... ";
+    PriorityQueue<int> pq9;
+
+    constexpr int NUM_ELEMENTS = 1000;
+    for (int i = 0; i < NUM_ELEMENTS; ++i) {
+        pq9.push(i, i);  // Priority equals value for simplicity
+    }
+
+    assert(pq9.get_size() == NUM_ELEMENTS);
+
+    // Should pop in descending order (highest priority/value first)
+    for (int i = NUM_ELEMENTS - 1; i >= 0; --i) {
+        assert(pq9.top_priority() == i);
+        assert(pq9.pop() == i);
+    }
+    assert(pq9.is_empty());
     std::cout << "PASSED" << std::endl;
 
     std::cout << "\n=== All Priority Queue tests PASSED! ===" << std::endl;
