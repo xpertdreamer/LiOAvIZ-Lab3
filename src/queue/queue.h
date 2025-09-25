@@ -12,36 +12,36 @@ class Queue {
     size_t capacity;
     size_t size;
     /*
-     * Save rear and front elements
+     * Save tail and head elements
      * of queue array to properly
      * push and pop
      */
-    size_t rear;
-    size_t front;
+    size_t tail;
+    size_t head;
 
     E* heap;
 
     void resize(const size_t newCapacity) {
         auto* newHeap = new E[newCapacity];
 
-        if (front < rear) {
+        if (head < tail) {
             for (size_t i = 0; i < size; i++) {
-                newHeap[i] = std::move(heap[(front + i)]);
+                newHeap[i] = heap[head + i];
             }
         } else {
-            const size_t firstPart = capacity - front;
+            const size_t firstPart = capacity - head;
             for (size_t i = 0; i < firstPart; i++) {
-                newHeap[i] = std::move(heap[(front + i)]);
+                newHeap[i] = heap[(head + i)];
             }
-            for (size_t i = 0; i < rear; i++) {
-                newHeap[firstPart + i] = std::move(heap[i]);
+            for (size_t i = 0; i < tail; i++) {
+                newHeap[firstPart + i] = heap[i];
             }
         }
         delete[] heap;
         heap = newHeap;
         capacity = newCapacity;
-        front = 0;
-        rear = size;
+        head = 0;
+        tail = size;
     }
 
     public:
@@ -49,8 +49,8 @@ class Queue {
     explicit Queue(const size_t cap)
         : capacity(cap),
         size(0),
-        rear(0),
-        front(0),
+        tail(0),
+        head(0),
         heap(new E[capacity]) {}
     // Destructor
     ~Queue() {
@@ -71,35 +71,36 @@ class Queue {
 
     [[nodiscard]] size_t get_capacity() const { return capacity; }
 
-    [[maybe_unused]] const E& peek_back() const {
+    [[maybe_unused]] const E& peek_tail() const {
         if (is_empty()) throw std::out_of_range("Queue is empty");
-        return heap[(rear == 0) ? capacity - 1 : rear - 1];
+        return heap[(tail == 0) ? capacity - 1 : tail - 1];
     }
 
-    [[maybe_unused]] const E& peek_front() const {
+    [[maybe_unused]] const E& peek_head() const {
         if (is_empty()) throw std::out_of_range("Queue is empty");
-        return heap[front];
+        return heap[head];
     }
 
     void push(E&& e) {
         if (is_full()) resize(2 * capacity);
-        heap[rear] = std::move(e);
-        rear = (rear + 1) % capacity;
+        heap[tail] = e;
+        e = E();
+        tail = (tail + 1) % capacity;
         ++size;
     }
 
     void push(const E& e) {
         if (is_full()) resize(2 * capacity);
-        heap[rear] = e;
-        rear = (rear + 1) % capacity;
+        heap[tail] = e;
+        tail = (tail + 1) % capacity;
         ++size;
     }
 
     [[maybe_unused]] E pop() {
         if (is_empty()) throw std::out_of_range("Queue is empty");
 
-        E res = std::move(heap[front]);
-        front = (front + 1) % capacity;
+        E res = std::move(heap[head]);
+        head = (head + 1) % capacity;
         --size;
 
         if (size < capacity / 4 && capacity > 10) resize(std::max(static_cast<size_t>(10), capacity / 2));

@@ -20,8 +20,8 @@ void run_demo_queue() {
 
     std::cout << "Queue size: " << q.get_size() << std::endl;
     std::cout << "Capacity: " << q.get_capacity() << std::endl;
-    std::cout << "Front element: " << q.peek_front() << std::endl;
-    std::cout << "Back element: " << q.peek_back() << std::endl;
+    std::cout << "head element: " << q.peek_head() << std::endl;
+    std::cout << "tail element: " << q.peek_tail() << std::endl;
 
     std::cout << "\nExtracting all elements (FIFO order):" << std::endl;
     while (!q.is_empty()) {
@@ -41,17 +41,17 @@ void run_tests_queue() {
     assert(q.get_capacity() == 5);
     std::cout << "PASSED" << std::endl;
 
-    // Test 2: Push elements and peek at front and back
+    // Test 2: Push elements and peek at head and tail
     std::cout << "Test 2: Push and Peek... ";
     q.push(10);
     assert(!q.is_empty());
     assert(q.get_size() == 1);
-    assert(q.peek_front() == 10);
-    assert(q.peek_back() == 10);  // Only one element, so front and back are same
+    assert(q.peek_head() == 10);
+    assert(q.peek_tail() == 10);  // Only one element, so head and tail are same
 
     q.push(20);
-    assert(q.peek_front() == 10);  // Queue is FIFO, so front should be first pushed element
-    assert(q.peek_back() == 20);   // Back should be last pushed element
+    assert(q.peek_head() == 10);  // Queue is FIFO, so head should be first pushed element
+    assert(q.peek_tail() == 20);   // tail should be last pushed element
     assert(q.get_size() == 2);
     std::cout << "PASSED" << std::endl;
 
@@ -59,8 +59,8 @@ void run_tests_queue() {
     std::cout << "Test 3: Pop... ";
     assert(q.pop() == 10);
     assert(q.get_size() == 1);
-    assert(q.peek_front() == 20);  // After pop, front should be next element
-    assert(q.peek_back() == 20);   // Only one element left
+    assert(q.peek_head() == 20);  // After pop, head should be next element
+    assert(q.peek_tail() == 20);   // Only one element left
 
     assert(q.pop() == 20);
     assert(q.is_empty());
@@ -85,14 +85,14 @@ void run_tests_queue() {
 
     // Test empty queue exceptions
     try {
-        q3.peek_front();
+        q3.peek_head();
         assert(false); // Should not reach this point
     } catch (const std::out_of_range& e) {
         assert(std::string(e.what()) == "Queue is empty");
     }
 
     try {
-        q3.peek_back();
+        q3.peek_tail();
         assert(false); // Should not reach this point
     } catch (const std::out_of_range& e) {
         assert(std::string(e.what()) == "Queue is empty");
@@ -117,8 +117,8 @@ void run_tests_queue() {
 
     assert(q4.get_capacity() == 10);
     assert(q4.get_size() == 10);
-    assert(q4.peek_front() == 1);  // First pushed element should be at front
-    assert(q4.peek_back() == 10);  // Last pushed element should be at back
+    assert(q4.peek_head() == 1);  // First pushed element should be at head
+    assert(q4.peek_tail() == 10);  // Last pushed element should be at tail
 
     // Verify FIFO order (First In, First Out)
     for (int i = 1; i <= 10; i++) {

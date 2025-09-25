@@ -6,6 +6,11 @@
 #define STACK_H
 #include <stdexcept>
 
+/*
+ * Without STL objects may
+ * remain in memory when we copy them
+ */
+
 template<typename E>
 class Stack {
     private:
