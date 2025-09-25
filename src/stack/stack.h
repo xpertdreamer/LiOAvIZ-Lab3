@@ -11,13 +11,13 @@ class Stack {
     private:
     size_t capacity;  // Max size of our stack
     size_t size;
-    size_t top;     // Top of the stack
     E* heap;
 
     void resize(const size_t newCapacity) {
-        E* newHeap = new E[newCapacity];
-        for (size_t i = 0; i <= top; i++) {
-            newHeap[i] = std::move(heap[i]);
+        auto newHeap = new E[newCapacity];
+        for (size_t i = 0; i < size; i++) {
+            newHeap[i] = heap[i];
+            heap[i] = E();
         }
         delete[] heap;
         heap = newHeap;
@@ -26,7 +26,7 @@ class Stack {
 
     public:
     // Constructor
-    explicit Stack(const size_t cap) : capacity(cap), size(0), top(-1), heap(new E[cap]) {}
+    explicit Stack(const size_t cap) : capacity(cap), size(0), heap(new E[cap]) {}
     // Destructor
     ~Stack() {
         delete[] heap;
@@ -39,9 +39,9 @@ class Stack {
 
     // === Basic operations ===
     // True if stack is empty
-    [[nodiscard]] bool is_empty() const { return top == -1; }
+    [[nodiscard]] bool is_empty() const { return size == 0; }
     // True if stack is full
-    [[nodiscard]] bool is_full() const { return top == capacity - 1; }
+    [[nodiscard]] bool is_full() const { return size == capacity; }
 
     [[nodiscard]] size_t get_size() const { return size; }
 
@@ -49,29 +49,29 @@ class Stack {
     // Copy existing object
     void push(const E& e) {
         if (is_full()) resize(2 * capacity);
-        heap[++top] = e;
-        ++size;
+        heap[size++] = e;
     }
     // Move object or move temporary
     void push(E&& e) {
         if (is_full()) resize(2 * capacity);
-        heap[++top] = std::move(e);
-        ++size;
+        heap[size++] = e;
+        e = E();
     }
 
     [[maybe_unused]] E pop() {
         if (is_empty()) throw std::out_of_range("Stack is empty");
-        E result = std::move(heap[top--]);
-        --size;
+        E result = heap[size - 1];
+        heap[size - 1] = E();
+        size--;
 
         if (size < capacity / 4 && capacity > 10) resize(std::max(static_cast<size_t>(10), capacity / 2));
 
         return result;
     }
 
-    [[maybe_unused]] E peek() const {
+    [[maybe_unused]] const E& peek() const {
         if (is_empty()) throw std::out_of_range("Stack is empty");
-        return heap[top];
+        return heap[size - 1];
     }
 };
 
