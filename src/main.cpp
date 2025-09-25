@@ -57,16 +57,5 @@ int main() {
 
 void Utils::run_free_mode() {
     /* */
-    // std::cout << "Empty!" << std::endl;
-    PriorityQueue<int> pq;
-    pq.push(1, 1);
-    pq.push(2, 2);
-    pq.push(3,3);
-    pq.push(4,0);
-    std::cout  << pq.top() << std::endl;
-    std::cout << pq.top_priority() << std::endl;
-    std::cout << pq.contains_by_priority(2) << std::endl;
-    std::cout << pq.find_by_priority(3) << std::endl;
-    std::cout << pq.find_by_value(2) << std::endl;
-    std::cout << pq.pop() << std::endl;
+    std::cout << "Empty!" << std::endl;
 }
