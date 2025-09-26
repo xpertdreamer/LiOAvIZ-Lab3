@@ -38,7 +38,7 @@ namespace Utils {
             std::cout << "3. free - run your own code" << std::endl;
             std::cout << "4. playground - interactive mode" << std::endl;
             std::cout << "5. exit - stop the program" << std::endl;
-            std::cout << "Enter 'demo', 'test', 'free' or 'exit': ";
+            std::cout << "Enter 'demo', 'test', 'free', 'playground' or 'exit': ";
 
             std::cin >> mode;
 

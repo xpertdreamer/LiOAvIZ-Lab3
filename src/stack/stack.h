@@ -14,27 +14,29 @@
 template<typename E>
 class Stack {
     private:
-    size_t capacity;  // Max size of our stack
-    size_t size;
-    E* heap;
+    struct Node {
+        E data;
+        Node* next;
 
-    void resize(const size_t newCapacity) {
-        auto newHeap = new E[newCapacity];
-        for (size_t i = 0; i < size; i++) {
-            newHeap[i] = heap[i];
-            heap[i] = E();
-        }
-        delete[] heap;
-        heap = newHeap;
-        capacity = newCapacity;
-    }
+        explicit Node(const E& d) : data(d), next(nullptr) {}
+        explicit Node(E&& d) : data(static_cast<E&&>(d)), next(nullptr) {}
+        ~Node() = default;
+    };
+
+    size_t size;
+    Node* head;
 
     public:
     // Constructor
-    explicit Stack(const size_t cap) : capacity(cap), size(0), heap(new E[cap]) {}
+    explicit Stack() : size(0), head(nullptr) {}
     // Destructor
     ~Stack() {
-        delete[] heap;
+        while (head != nullptr) {
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+        }
+        head = nullptr;
     }
     // Prohibit assignment and movement
     Stack(const Stack&) = delete;
@@ -45,38 +47,38 @@ class Stack {
     // === Basic operations ===
     // True if stack is empty
     [[nodiscard]] bool is_empty() const { return size == 0; }
-    // True if stack is full
-    [[nodiscard]] bool is_full() const { return size == capacity; }
 
     [[nodiscard]] size_t get_size() const { return size; }
 
-    [[nodiscard]] size_t get_capacity() const { return capacity; }
     // Copy existing object
     void push(const E& e) {
-        if (is_full()) resize(2 * capacity);
-        heap[size++] = e;
+        Node* newNode = new Node(e);
+        newNode->next = head;
+        head = newNode;
+        size++;
     }
     // Move object or move temporary
     void push(E&& e) {
-        if (is_full()) resize(2 * capacity);
-        heap[size++] = e;
-        e = E();
+        Node* newNode = new Node(static_cast<E&&>(e));
+        newNode->next = head;
+        head = newNode;
+        size++;
     }
 
     [[maybe_unused]] E pop() {
         if (is_empty()) throw std::out_of_range("Stack is empty");
-        E result = heap[size - 1];
-        heap[size - 1] = E();
+        Node* temp = head;
+        E result = static_cast<E&&>(temp->data);
+        head = head->next;
+        delete temp;
         size--;
-
-        if (size < capacity / 4 && capacity > 10) resize(std::max(static_cast<size_t>(10), capacity / 2));
 
         return result;
     }
 
     [[maybe_unused]] const E& peek() const {
         if (is_empty()) throw std::out_of_range("Stack is empty");
-        return heap[size - 1];
+        return head->data;
     }
 };
 

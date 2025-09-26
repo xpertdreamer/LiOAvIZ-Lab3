@@ -11,7 +11,7 @@ void run_demo_stack() {
     std::cout << "\n=== Stack Demo ====" << std::endl;
 
     // Create stack with initial capacity of 10
-    Stack<int> s(10);
+    Stack<int> s;
 
     // Add elements to the stack
     for (int i = 1; i <= 10; i++) {
@@ -19,7 +19,6 @@ void run_demo_stack() {
     }
 
     std::cout << "Stack size: " << s.get_size() << std::endl;
-    std::cout << "Capacity: " << s.get_capacity() << std::endl;
     std::cout << "Top element: " << s.peek() << std::endl;
 
     std::cout << "\nExtracting all elements (LIFO order):" << std::endl;
@@ -33,11 +32,9 @@ void run_tests_stack() {
 
     // Test 1: Constructor and basic properties
     std::cout << "Test 1: Constructor and basic properties... ";
-    Stack<int> s(5);
+    Stack<int> s;
     assert(s.is_empty());
-    assert(!s.is_full());
     assert(s.get_size() == 0);
-    assert(s.get_capacity() == 5);
     std::cout << "PASSED" << std::endl;
 
     // Test 2: Push elements and peek at the top
@@ -62,7 +59,7 @@ void run_tests_stack() {
 
     // Test 4: Move semantics with string objects
     std::cout << "Test 4: Move semantics... ";
-    Stack<std::string> s2(3);
+    Stack<std::string> s2;
     std::string str = "Hello";
     s2.push(str);           // Copy constructor
     s2.push(std::move(str)); // Move constructor
@@ -75,7 +72,7 @@ void run_tests_stack() {
 
     // Test 5: Edge cases and exception handling
     std::cout << "Test 5: Edge cases and exceptions... ";
-    Stack<int> s3(3);
+    Stack<int> s3;
 
     // Test empty stack exceptions
     try {
@@ -95,14 +92,13 @@ void run_tests_stack() {
 
     // Test 6: Specific LIFO behavior example
     std::cout << "Test 6: Specific LIFO example... ";
-    Stack<int> s4(10);
+    Stack<int> s4;
 
     // Fill stack with numbers 1 to 10
     for (int i = 1; i <= 10; i++) {
         s4.push(i);
     }
 
-    assert(s4.get_capacity() == 10);
     assert(s4.get_size() == 10);
     assert(s4.peek() == 10);  // Last pushed element should be on top
 
@@ -115,35 +111,15 @@ void run_tests_stack() {
     assert(s4.get_size() == 0);
     std::cout << "PASSED" << std::endl;
 
-    // Test 7: Dynamic resizing functionality
-    std::cout << "Test 7: Dynamic resizing... ";
-    Stack<int> s5(2); // Small initial capacity to trigger resizing
-
-    s5.push(1);
-    s5.push(2);
-    assert(s5.get_capacity() == 2);
-
-    // This should trigger automatic resizing
-    s5.push(3);
-    assert(s5.get_capacity() > 2);
-    assert(s5.get_size() == 3);
-
-    // Verify data integrity after resize operation
-    assert(s5.pop() == 3);
-    assert(s5.pop() == 2);
-    assert(s5.pop() == 1);
-    assert(s5.is_empty());
-    std::cout << "PASSED" << std::endl;
-
-    // Test 8: Stack with different data types
-    std::cout << "Test 8: Different data types... ";
-    Stack<double> doubleStack(5);
+    // Test 7: Stack with different data types
+    std::cout << "Test 7: Different data types... ";
+    Stack<double> doubleStack;
     doubleStack.push(3.14);
     doubleStack.push(2.71);
     assert(doubleStack.pop() == 2.71);
     assert(doubleStack.pop() == 3.14);
 
-    Stack<char> charStack(3);
+    Stack<char> charStack;
     charStack.push('A');
     charStack.push('B');
     assert(charStack.pop() == 'B');

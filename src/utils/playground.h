@@ -33,7 +33,7 @@ namespace Playground {
         explicit ContainerWrapper(const ContainerType type, const size_t capacity=10) : type_(type) {
             switch (type) {
                 case ContainerType::STACK:
-                    stack_ = make_unique<Stack<E>>(capacity);
+                    stack_ = make_unique<Stack<E>>();
                     break;
                 case ContainerType::QUEUE:
                     queue_ = make_unique<Queue<E>>(capacity);
