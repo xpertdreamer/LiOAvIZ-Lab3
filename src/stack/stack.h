@@ -32,7 +32,7 @@ class Stack {
     // Destructor
     ~Stack() {
         while (head != nullptr) {
-            Node* temp = head;
+            const Node* temp = head;
             head = head->next;
             delete temp;
         }
