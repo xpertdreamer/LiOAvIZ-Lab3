@@ -81,18 +81,18 @@ namespace Playground {
             throw runtime_error("Invalid container type");
         }
 
-        E &head() {
+        E head() {
             switch (type_) {
                 case ContainerType::STACK: return stack_->peek();
                 case ContainerType::QUEUE: return queue_->peek_head();
-                case ContainerType::PRIORITY_QUEUE: return priority_queue_->peek_head();
+                case ContainerType::PRIORITY_QUEUE: return priority_queue_->top();
             }
             throw runtime_error("Invalid container type");
         }
 
-        E &tail() {
-            if (type_ != ContainerType::QUEUE) throw runtime_error("Invalid container type");
-            return queue_->peek_tail();
+        [[nodiscard]] int top_priority() const {
+
+            return type_ == ContainerType::PRIORITY_QUEUE ? priority_queue_->top_priority() : 0;
         }
 
         [[nodiscard]] size_t size() const {
@@ -143,7 +143,6 @@ namespace Playground {
                     handle_use(name);
                 }
             },
-            {"list", [this](auto &iss) { handle_list(); }},
             {
                 "remove", [this](auto &iss) {
                     string name;
@@ -163,6 +162,8 @@ namespace Playground {
             {"pop", [this](auto &iss) { handle_pop(); }},
             {"size", [this](auto &iss) { handle_size(); }},
             {"empty", [this](auto &iss) { handle_empty(); }},
+            {"list", [this](auto &iss) { handle_list(); }},
+            {"head", [this](auto &iss) { handle_head(); }},
             {"help", [this](auto &iss) { handle_help(); }}
         };
         string currentContainer_;
@@ -241,14 +242,13 @@ namespace Playground {
             cout << "Popped: " << value << endl;
         }
 
-        // void handle_head() {
-        //     check_container_exist();
-        //     E value = container_->head();
-        //     cout << "Head: " << value;
-        //     if (container_->get_type() == ContainerType::PRIORITY_QUEUE) cout << " (Priority: " <<  << ")";
-        // }
-
-        // void handle_tail() {}
+        void handle_head() {
+            auto container = get_current_container();
+            E value = container->head();
+            cout << "Head: " << value;
+            if (container->get_type() == ContainerType::PRIORITY_QUEUE) cout << " (Priority: " << container->top_priority() << ")";
+            cout << endl;
+        }
 
         void handle_size() {
             auto container = get_current_container();
@@ -274,8 +274,7 @@ namespace Playground {
             cout << "use <name>               - Switch to container\n";
             cout << "push <value> [priority]  - Push value\n";
             cout << "pop                      - Pop element\n";
-            // cout << "head                      - View top element\n";
-            // cout << "tail                     - View back element (queue only)\n";
+            cout << "head                     - View top element\n";
             cout << "size                     - Get size\n";
             cout << "empty                    - Check if empty\n";
             cout << "remove <name>            - Remove container\n";
