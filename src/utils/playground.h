@@ -4,9 +4,12 @@
 
 #ifndef PLAYGROUND_H
 #define PLAYGROUND_H
+#include <functional>
 #include <iostream>
 #include <sstream>
 #include <memory>
+#include <unordered_map>
+#include <utility>
 
 #include "priority_q/priority_q.h"
 #include "queue/queue.h"
@@ -28,9 +31,10 @@ namespace Playground {
         unique_ptr<Queue<E>> queue_;
         unique_ptr<PriorityQueue<E>> priority_queue_;
         ContainerType type_{};
+        string name_;
 
     public:
-        explicit ContainerWrapper(const ContainerType type, const size_t capacity=10) : type_(type) {
+        explicit ContainerWrapper(const ContainerType type, string name, const size_t capacity=10) : type_(type), name_(std::move(name)) {
             switch (type) {
                 case ContainerType::STACK:
                     stack_ = make_unique<Stack<E>>();
@@ -45,6 +49,7 @@ namespace Playground {
         }
 
         [[nodiscard]] ContainerType get_type() const { return type_; }
+        [[nodiscard]] const string& get_name() const { return name_; }
 
         [[nodiscard]] const char* get_type_name() const{
             switch (type_) {
@@ -118,7 +123,40 @@ namespace Playground {
     template<typename E>
     class PlaygroundManager {
     private:
-        unique_ptr<ContainerWrapper<E>> container_;
+        unordered_map<string, unique_ptr<ContainerWrapper<E>>> containers_;
+        unordered_map<string, function<void(istringstream&)>> commands_ = {
+            {"create", [this](auto& iss) {
+                string type;
+                size_t cap = 10;
+                if (!(iss >> type)) throw runtime_error("Invalid container type");
+                iss >> cap;
+                handle_create(type, cap);
+            }},
+            {"use", [this](auto& iss) {
+                string name;
+                if (!(iss >> name)) throw runtime_error("Invalid container name");
+                handle_use(name);
+            }},
+            {"list", [this](auto& iss) { handle_list(); }},
+            {"remove", [this](auto& iss) {
+                string name;
+                if (!(iss >> name)) throw runtime_error("Invalid container name");
+                handle_remove(name);
+            }},
+            {"push", [this](auto& iss) {
+                E value;
+                int prior = 1;
+                if (!(iss >> value)) throw runtime_error("Invalid value");
+                iss >> prior;
+                handle_push(value, prior);
+            }},
+            {"pop", [this](auto& iss) { handle_pop(); }},
+            {"size", [this](auto& iss) { handle_size(); }},
+            {"empty", [this](auto& iss) { handle_empty(); }},
+            {"help", [this](auto& iss) { handle_help(); }}
+        };
+        string currentContainer_;
+        int containerCounter_ = 0;
 
         static constexpr string CONTAINER_TYPES[] {"stack", "queue", "priority_queue"};
         static constexpr size_t CONTAINER_TYPES_COUNT = 3;
@@ -131,33 +169,68 @@ namespace Playground {
             throw runtime_error("Invalid container type");
         }
 
-        void check_container_exist() const {
-            if (!container_) throw runtime_error("No container created! Use 'create <type> [capacity]' first.");
+        string generate_container_name(const string& type) {
+            return type + "_" + to_string(++containerCounter_);
+        }
+
+        ContainerWrapper<E>* get_current_container() const {
+            auto it = containers_.find(currentContainer_);
+            if (it == containers_.end()) throw runtime_error("No container selected! Use 'use <name>' first.");
+            return it->second.get();
         }
 
         // === Util methods to handle commands ===
         void handle_create(const string& str_type, size_t capacity) {
             try {
                 ContainerType type = string_to_type(str_type);
-                container_ = make_unique<ContainerWrapper<E>>(type, capacity);
-                cout << str_type << " created with capacity " << capacity << endl;
+                string name = generate_container_name(str_type);
+                containers_[name] = make_unique<ContainerWrapper<E>>(type, name, capacity);
+                currentContainer_ = name;
+                cout << "Created " << str_type << " '" << name << "' with capacity " << capacity << endl;
+                cout << "Now using: " << name << endl;
             } catch (const exception& e) {
                 cout << "Error: " << e.what() << endl;
                 cout << "Available types: stack, queue, priority_queue" << endl;
             }
         }
 
+        void handle_use(const string& name) {
+            if (containers_.contains(name)) {
+                currentContainer_ = name;
+                auto container = get_current_container();
+                cout << "Now using: " << name << " (" << container->get_type_name() << ")" << endl;
+            } else {
+                cout << "Error: Container '" << name << "' not found!" << endl;
+            }
+        }
+
+        void handle_list() {
+            if (containers_.empty()) {
+                cout << "No container created!" << endl;
+                return;
+            }
+
+            cout << "Available containers:" << endl;
+            for (const auto& [name, container] : containers_) {
+                cout << " " << name << " (" << container->get_type_name() << ")" << endl;
+                if (name == currentContainer_) cout << " [CURRENT]";
+                cout << " - size: " << container->size();
+                cout << " - empty: " << (container->empty() ? "yes" : "no");
+                cout << endl;
+            }
+        }
+
         void handle_push(const E& e, int priority) {
-            check_container_exist();
-            container_->push(e, priority);
+            auto container = get_current_container();
+            container->push(e, priority);
             cout << "Pushed: " << e;
-            if (container_->get_type() == ContainerType::PRIORITY_QUEUE) cout << " with priority " << priority;
+            if (container->get_type() == ContainerType::PRIORITY_QUEUE) cout << " with priority " << priority;
             cout << endl;
         }
 
         void handle_pop() {
-            check_container_exist();
-            E value = container_->pop();
+            auto container = get_current_container();
+            E value = container->pop();
             cout << "Popped: " << value << endl;
         }
 
@@ -171,27 +244,37 @@ namespace Playground {
         // void handle_tail() {}
 
         void handle_size() {
-            check_container_exist();
-            cout << "Size: " << container_->size() << endl;
+            auto container = get_current_container();
+            cout << "Size: " << container->size() << endl;
         }
 
         void handle_empty() {
-            check_container_exist();
-            cout << (container_->empty() ? "empty" : "not empty") << endl;
+            auto container = get_current_container();
+            cout << (container->empty() ? "empty" : "not empty") << endl;
+        }
+
+        void handle_remove(const string& name) {
+            if (containers_.contains(name)) {
+                if (currentContainer_ == name) currentContainer_.clear();
+                containers_.erase(name);
+                cout << "Removed: " << name << endl;
+            } else cout << "Error: Container '" << name << "' not found!" << endl;
         }
 
         void handle_help() {
-            std::cout << "\n=== Available Commands ===\n";
-            std::cout << "create <type> [capacity] - Create container\n";
-            std::cout << "push <value> [priority]  - Push value\n";
-            std::cout << "pop                      - Pop element\n";
-            // std::cout << "head                      - View top element\n";
-            // std::cout << "tail                     - View back element (queue only)\n";
-            std::cout << "size                     - Get size\n";
-            std::cout << "empty                    - Check if empty\n";;
-            std::cout << "help                     - Show help\n";
-            std::cout << "exit                     - Exit playground\n";
-            std::cout << "==========================\n";
+            cout << "\n=== Available Commands ===\n";
+            cout << "create <type> [capacity] - Create container\n";
+            cout << "use <name>               - Switch to container\n";
+            cout << "push <value> [priority]  - Push value\n";
+            cout << "pop                      - Pop element\n";
+            // cout << "head                      - View top element\n";
+            // cout << "tail                     - View back element (queue only)\n";
+            cout << "size                     - Get size\n";
+            cout << "empty                    - Check if empty\n";
+            cout << "remove <name>            - Remove container\n";
+            cout << "help                     - Show help\n";
+            cout << "exit                     - Exit playground\n";
+            cout << "==========================\n";
         }
 
     public:
@@ -202,7 +285,7 @@ namespace Playground {
             string command;
             while (true) {
                 cout << "playground> ";
-                getline(cin, command);
+                if (!getline(cin, command)) break;
 
                 if (command.empty()) continue;
 
@@ -210,28 +293,17 @@ namespace Playground {
                 string action;
                 iss >> action;
 
+                if (action == "exit") {
+                    cout << "Exiting Playground..." << endl;
+                    break;
+                }
+
                 try {
-                    if (action == "create") {
-                        string type;
-                        size_t capacity = 10;
-                        iss >> type;
-                        iss >> capacity;
-                        handle_create(type, capacity);
-                    } else if (action == "push") {
-                        E value;
-                        if (iss >> value) {
-                            int priority = 1;
-                            iss >> priority;
-                            handle_push(value, priority);
-                        } else cout << "Error: Invalid value" << endl;
-                    } else if (action == "pop") handle_pop();
-                    else if (action == "size") handle_size();
-                    else if (action == "empty") handle_empty();
-                    else if (action == "help") handle_help();
-                    else if (action == "exit") {
-                        cout << "Exiting Playground..." << endl;
-                        break;
-                    } else cout << "Unknown command: " << action << " Type 'help' for available commands." << endl;
+                    if (auto it = commands_.find(action); it != commands_.end()) {
+                        it->second(iss);
+                    } else {
+                        cout << "Unknown command: '" << action << "'. Type 'help' for available commands." << endl;
+                    }
                 } catch (const exception& e) {
                     cout << "Error: " << e.what() << endl;
                 } catch (...) {
