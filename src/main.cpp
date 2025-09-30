@@ -3,9 +3,14 @@
 
 #include "priority_q/priority_q.h"
 #include "priority_q_tests/test_priority_q.h"
+#include "queue/queue.h"
 #include "queue_tests/test_queue.h"
+#include "stack/stack.h"
 #include "stack_tests/test_stack.h"
 #include "utils/utils.h"
+
+// перебор всех типов
+// удаление части очереди
 
 int main() {
     /*
@@ -57,5 +62,30 @@ int main() {
 
 void Utils::run_free_mode() {
     /* */
-    std::cout << "Empty!" << std::endl;
+    // std::cout << "Empty!" << std::endl;
+    std::cout << "Queue peek" << std::endl;
+    Queue<int> q;
+    for (int i = 1; i <= 10; i++) {
+        q.push(i);
+    }
+    q.remove_from(5);
+    q.peek_q();
+    std::cout << std::endl;
+    std::cout << q.pop() << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "Stack peek" << std::endl;
+    Stack<int> s;
+    for (int i = 1; i <= 10; i++) {
+        s.push(i);
+    }
+    s.peek_stack();
+    std::cout << std::endl;
+
+    std::cout << "Priority Q peek" << std::endl;
+    PriorityQueue<int> pq;
+    for (int i = 1; i <= 10; i++) {
+        pq.push(i, i / (-2));
+    }
+    pq.peek_pq();
 }

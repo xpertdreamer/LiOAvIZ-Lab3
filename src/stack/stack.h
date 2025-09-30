@@ -80,6 +80,13 @@ class Stack {
         if (is_empty()) throw std::out_of_range("Stack is empty");
         return head->data;
     }
+
+    void peek_stack() const {
+        if (is_empty()) throw std::out_of_range("Stack is empty");
+        for (auto current = head; current != nullptr; current = current->next) {
+            std::cout << current->data << " ";
+        }
+    }
 };
 
 #endif //STACK_H

@@ -128,6 +128,13 @@ class PriorityQueue {
         }
         return -1;
     }
+
+    void peek_pq() const {
+        if (is_empty()) throw std::out_of_range("Priority queue is empty");
+        for (auto curr = head; curr != nullptr; curr = curr->next) {
+            std::cout << curr->data << "(" << curr->priority << ") ";
+        }
+    }
 };
 
 #endif

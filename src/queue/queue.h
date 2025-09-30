@@ -84,6 +84,30 @@ class Queue {
         --size;
         return res;
     }
+
+    void remove_from(E value) {
+        if (is_empty()) throw std::out_of_range("Queue is empty");
+        auto curr = head;
+        while (curr->next->data != value && curr != nullptr) {
+            curr = curr->next;
+        }
+        if (curr != nullptr) {
+            auto toDel = curr->next;
+            curr->next = nullptr;
+            while (toDel != nullptr) {
+                auto temp = toDel;
+                toDel = toDel->next;
+                delete temp;
+            }
+        }
+    }
+
+    void peek_q() const {
+        if (is_empty()) throw std::out_of_range("Queue is empty");
+        for (auto current = head; current != nullptr; current = current->next) {
+            std::cout << current->data << " ";
+        }
+    }
 };
 
 #endif //QUEUE_H
